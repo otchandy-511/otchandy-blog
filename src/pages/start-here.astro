@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const leadingSelf = allPosts
+  .filter((p) => p.data.theme === 'leading-self')
+  .sort((a, b) => a.data.publishDate.valueOf() - b.data.publishDate.valueOf());
+const leadingOthers = allPosts
+  .filter((p) => p.data.theme === 'leading-others')
+  .sort((a, b) => a.data.publishDate.valueOf() - b.data.publishDate.valueOf());
+---
+
+<BaseLayout title="Start here">
+  <h1>Start here</h1>
+  <p>
+    If you're new here: this is not a general leadership blog. It's written
+    for one specific moment, the first year you're responsible for other
+    people's work. Read in this order.
+  </p>
+
+  <h2>Part one: leading yourself</h2>
+  <p>Before a team will follow you, your own habits need to hold up first.</p>
+  {leadingSelf.length === 0 && <p class="meta">Coming shortly.</p>}
+  <ol class="start-here-list">
+    {leadingSelf.map((post) => (
+      <li>
+        <a href={`/posts/${post.slug}/`}>{post.data.title}</a>
+      </li>
+    ))}
+  </ol>
+
+  <h2>Part two: leading others for the first time</h2>
+  <p>The situations that show up in your first year as someone's manager.</p>
+  {leadingOthers.length === 0 && <p class="meta">Coming shortly.</p>}
+  <ol class="start-here-list">
+    {leadingOthers.map((post) => (
+      <li>
+        <a href={`/posts/${post.slug}/`}>{post.data.title}</a>
+      </li>
+    ))}
+  </ol>
+</BaseLayout>
