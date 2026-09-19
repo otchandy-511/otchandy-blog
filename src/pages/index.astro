@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../lib/site';
+import { FORMAT_LABELS } from '../lib/formats';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const posts = allPosts.sort(
+  (a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
+);
+---
+
+<BaseLayout title={SITE.title}>
+  <p class="meta" style="margin-bottom: 0.5rem;">{SITE.tagline}</p>
+  <p style="color: var(--text-muted); max-width: 38rem;">
+    Twenty years running factories, supply chains and the people inside them,
+    written down for whoever just became a team leader and wasn't handed a manual.
+  </p>
+
+  {posts.length === 0 && (
+    <p class="meta">The first essay is coming shortly.</p>
+  )}
+
+  <ul class="post-list">
+    {posts.map((post) => {
+      const dateLabel = post.data.publishDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+      return (
+        <li>
+          <p class="meta">
+            <span class="tag">{FORMAT_LABELS[post.data.format] ?? post.data.format}</span>
+            &middot; {dateLabel}
+          </p>
+          <h2><a href={`/posts/${post.slug}/`}>{post.data.title}</a></h2>
+          <p class="excerpt">{post.data.description}</p>
+        </li>
+      );
+    })}
+  </ul>
+</BaseLayout>
