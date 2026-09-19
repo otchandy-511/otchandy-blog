@@ -1,0 +1,43 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { SITE } from '../lib/site';
+import { FORMAT_LABELS, THEME_LABELS } from '../lib/formats';
+
+interface Props {
+  title: string;
+  description: string;
+  format: string;
+  theme: string;
+  publishDate: Date;
+}
+
+const { title, description, format, theme, publishDate } = Astro.props;
+
+const dateLabel = publishDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={title} description={description}>
+  <article class="post">
+    <p class="meta">
+      <span class="tag">{FORMAT_LABELS[format] ?? format}</span>
+      &middot; {THEME_LABELS[theme] ?? theme} &middot; {dateLabel}
+    </p>
+    <h1>{title}</h1>
+    <slot />
+
+    <div class="subscribe">
+      <h3>If this was useful</h3>
+      <p>
+        One essay like this every two weeks, no more. Straight to your inbox, nothing else.
+      </p>
+      <form action={SITE.kitFormAction} method="post">
+        <input type="email" name="email_address" placeholder="you@email.com" required />
+        <button type="submit">Subscribe</button>
+      </form>
+    </div>
+  </article>
+</BaseLayout>
